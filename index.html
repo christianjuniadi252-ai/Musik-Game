@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="id">  
+<head>  
+<meta charset="UTF-8">  
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Qris Media</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<meta name="theme-color" content="#1f1f1f">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="icon" href="icon-192.png">
+<style>  
+*{  
+    margin:0;  
+    padding:0;  
+    box-sizing:border-box;  
+    font-family:sans-serif;  
+}  
+  
+html,
+body{
+    margin:0;
+    width:100%;
+    height:100%;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+    min-height: 100dvh;
+    background:#121212;
+    color:white;
+    overflow:hidden;
+}
+  
+header {
+    display: flex;
+    position: fixed;
+    background:#1f1f1f;
+    padding:15px;
+    justify-content: space-between;
+    font-size:20px;  
+    font-weight:bold;  
+}  
+  
+.chat-container{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+    min-height:0;
+    padding:0;
+    padding-bottom: 15px;
+    gap:16px;
+}
+  
+.message{  
+    max-width:80%;  
+    padding:10px 14px;  
+    border-radius:12px;  
+    word-wrap:break-word;  
+}  
+
+.message-content{
+    flex:1;
+    word-break:break-word;
+}
+
+.msg-group .edited-content{
+    display: inline-block;
+    padding-right: 38px;
+}
+
+.message-reply{
+    position:relative;
+    z-index:10;
+}
+
+.edited-label{
+    align-self:flex-end;
+    font-size:11px;
+    color:#999;
+    flex-shrink:0;
+    margin-left:4px;
+}
+  
+.user{  
+    background:#2563eb;  
+    align-self:flex-end;  
+}  
+  
+.bot{  
+    background:#2d2d2d;  
+    align-self:flex-start;  
+}  
+  
+.player{
+    display:none;
+    background:#1a1a1a;
+    padding:15px;
+    border-top:1px solid #333;
+}
+  
+#playerFrame{
+    width:100%;
+    aspect-ratio:16/9;
+    overflow:hidden;
+    border-radius:10px;
+}
+  
+.input-area{
+    display:flex;
+    align-items: flex-end;
+    gap:10px;  
+    background:#1f1f1f;
+    flex-shrink:0;
+}  
+  
+input{
+    flex:1;  
+    padding:12px;  
+    border:none;  
+    border-radius:8px;  
+    outline:none;  
+    background:#2d2d2d;  
+    color:white;  
+}  
+  
+button{  
+    padding:12px 20px;  
+    border:none;  
+    border-radius:8px;  
+    /*background:#22c55e;*/
+    background: seagreen;
+    color:white;  
+    cursor:pointer;  
+}  
+  
+button:hover{  
+    opacity:.9;  
+}  
+
+#loginContainer{
+    padding:10px;
+    text-align:center;
+}
+
+#userInfo{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 15px;
+    background:#1f1f1f;
+    border-bottom:1px solid #333;
+    margin-top: -20px;
+}
+
+.account{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+#avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+#username{
+    color:white;
+    font-weight:600;
+    font-size:16px;
+}
+
+#replyPreview{
+    display:none;
+    padding:10px;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(0,0,0,0.2);
+    border-left:4px solid #555;
+    border-radius: 6px;
+    justify-content:space-between;
+    align-items:center;
+    
+    word-break:break-word;
+}
+
+#replyText{
+    flex:1;
+    color:#ccc;
+}
+
+#cancelReply{
+    width:28px;
+    height:28px;
+    padding:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:transparent;
+    color:#aaa;
+    border:none;
+    border-radius:6px;
+    flex-shrink:0;
+}
+
+#cancelReply:hover{
+    background:#333;
+    color:#fff;
+}
+
+#cancelReply svg{
+    width:18px;
+    height:18px;
+}
+
+.msg{
+    position:relative;
+    display:flex;
+    width:100%;
+    gap:10px;
+
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
+}
+
+.msg-group {
+    margin-top:-12px;
+}
+
+.msg.own{
+    justify-content:flex-end;
+}
+
+.msg.own .msg-content{
+    background: #144D37;
+    color:white;
+}
+
+.msg.own .msg-avatar,
+.msg.own .msg-avatar-placeholder{
+    order:2;
+    margin-left: -6px !important;
+    margin-right: 8px !important;
+}
+
+.msg.own .msg-avatar-placeholder{
+    order:2;
+}
+
+.msg.own .msg-content{
+    order:1;
+}
+
+.msg.own .reply-icon{
+    left:auto;
+    right:40px;
+}
+
+.msg-avatar, .msg-avatar-placeholder {
+    width:32px;
+    height:32px;
+    flex-shrink: 0;
+    border-radius:50%;
+    margin-right: -4px;
+    margin-left: 8px;
+}
+
+.msg-avatar-placeholder{
+    width:32px;
+    height:32px;
+    flex-shrink:0;
+}
+
+.msg-content{
+    max-width:70%;
+    width:fit-content;
+    background:#2b2b2b;
+    padding:8px 10px 8px 6px;
+    border-radius:8px;
+}
+
+.msg-header{
+    display:flex;
+    gap:10px;
+    justify-content: space-between;
+    align-items:center;
+}
+
+.msg-name{
+    color:white;
+    font-weight:bold;
+    margin-bottom:4px;
+    margin-left:6px;
+}
+
+.msg-time{
+    color:#888;
+    font-size:12px;
+}
+
+.msg-text{
+    gap:6px;
+    color:#d1d5db;
+    margin-left:6px;
+    
+    word-break:break-word;
+}
+
+.reply-box{
+    border-left: 3px solid rgba(255,255,255,0.2);
+    padding: 8px;
+    margin-top:6px;
+    margin-bottom:6px;
+    color:#999;
+    border-radius: 4px;
+    font-size:13px;
+    background: rgba(0,0,0,0.2);
+    
+    word-break:break-word;
+}
+
+.header-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.header-buttons button{
+    width:42px;
+    height:42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border:none;
+    border-radius:10px;
+    background:#2d2d2d;
+    color:white;
+    cursor:pointer;
+    font-size:18px;
+    transition:.2s;
+    padding: 0;
+}
+
+.header-buttons button:hover{
+    background:#3a3a3a;
+}
+
+.header-buttons button svg{
+    width:22px;
+    height:22px;
+    stroke-width:2;
+}
+
+#sendBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  background: #1f1f1f;
+  padding: 15px;
+  gap: 15px;
+}
+
+#commandInput{
+    flex:1;
+    min-height:36px;
+    max-height:120px;
+
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    outline:none;
+
+    background:#2d2d2d;
+    color:white;
+
+    resize:none;
+    line-height:20px;
+}
+
+.date-separator{
+    align-self:center;
+    margin:0 0 10px;
+
+    padding:6px 12px;
+
+    background:#2d2d2d;
+    color:#bbb;
+
+    border-radius:999px;
+
+    font-size:12px;
+    font-weight:600;
+}
+
+.reply-icon{
+    position:absolute;
+
+    left:40px;
+    top:50%;
+    transform:translateY(-50%) scale(.6);
+
+    width:28px;
+    height:28px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    opacity:0;
+    pointer-events:none;
+
+    transition:
+        opacity .15s ease,
+        transform .15s ease;
+}
+
+.menu-overlay{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:none;
+
+    justify-content:flex-end;
+    flex-direction:column;
+
+    z-index:9999;
+
+}
+
+.menu-sheet{
+
+    background:#222;
+
+    border-radius:18px 18px 0 0;
+
+    padding:20px;
+
+}
+
+.menu-sheet button{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:15px;
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    font-size:16px;
+
+}
+
+.edited-label{
+    font-size:11px;
+    color:#999;
+    margin-left:8px;
+    font-style:italic;
+}
+
+.menu-preview{
+    margin-bottom:15px;
+}
+
+.menu-preview .reply-box{
+    margin:0;
+    padding:10px;
+    border-left:4px solid #555;
+    background:rgba(255,255,255,.05);
+    border-radius:6px;
+
+    word-break:break-word;
+}
+
+.msg.bot .msg-content{
+    background:#1f2937;
+    border:1px solid #3b82f6;
+}
+
+.msg.bot .msg-text b{
+    color:#fff;
+}
+
+.msg.bot .msg-text{
+    color:#cfcfcf;
+}
+
+.msg.bot .msg-name{
+    color:#60a5fa;
+}
+
+.msg.bot{
+    padding:0;
+    background:none;
+}
+
+.msg-text code{
+    background:#111827;
+    color:#7dd3fc;
+    padding:2px 6px;
+    border-radius:6px;
+    font-family:monospace;
+    font-size:.9em;
+}
+
+.jump-highlight{
+    animation: jumpFlash 2s ease;
+}
+
+@keyframes jumpFlash{
+
+    0%{
+        background: none;
+    }
+
+    25%{
+        background: rgba(100,200,255,0.2);
+    }
+
+    50%{
+        background: rgba(100,200,255,0.2);
+    }
+
+    100%{
+        background: none;
+    }
+
+}
+
+/*.msg-text{
+    position:relative;
+    padding-right:45px;
+}*/
+
+.message-meta{
+    position:absolute;
+    right:4px;
+    top:4px;
+    font-size:11px;
+    color:#999;
+    white-space:nowrap;
+}
+
+.same-user-message{
+    padding-right:52px;
+    position:relative;
+}
+
+.msg-group .msg-text{
+    padding-right:45px;
+}
+
+.music-header{
+
+    display:none;
+
+    background:#181818;
+
+    padding:10px 14px;
+
+    border-bottom:1px solid #333;
+
+}
+
+.music-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.music-title-wrapper{
+
+    flex:1;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+}
+
+.music-title{
+
+    display:inline-block;
+
+    animation:scrollTitle 12s linear infinite;
+
+}
+
+@keyframes scrollTitle{
+
+    from{
+        transform:translateX(100%);
+    }
+
+    to{
+        transform:translateX(-100%);
+    }
+
+}
+
+.music-progress{
+
+    margin-top:8px;
+
+    height:3px;
+
+    background:#444;
+
+    border-radius:10px;
+
+}
+
+#musicBar{
+
+    width:0%;
+
+    height:100%;
+
+    background:red;
+
+    border-radius:10px;
+
+}
+
+.playlist-modal{
+    position:fixed;
+    left:50%;
+    top:70px;
+    transform:translateX(-50%);
+    width:90%;
+    max-width:420px;
+    max-height:60vh;
+    overflow-y:auto;
+    background:#1e1e1e;
+    border:1px solid #333;
+    border-radius:8px;
+    z-index:999;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+}
+
+.playlist-header{
+    padding:14px;
+    font-size:18px;
+    font-weight:bold;
+    border-bottom:1px solid #333;
+    position:sticky;
+    top:0;
+    background:#1e1e1e;
+}
+
+.playlist-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:12px 14px;
+
+    border-bottom:1px solid #2c2c2c;
+}
+
+.drag-handle{
+    font-size:20px;
+    color:#999;
+    cursor:grab;
+    user-select:none;
+}
+
+.playlist-title{
+    flex:1;
+    color:white;
+    font-weight:bold;
+}
+
+.delete-playlist{
+    background:none;
+    border:none;
+    color:#ff5555;
+    font-size:22px;
+    cursor:pointer;
+    padding:0 6px;
+}
+
+.playlist-item:last-child{
+    border-bottom:none;
+}
+
+.playlist-title{
+    font-weight:bold;
+    color:#fff;
+}
+
+.playlist-user{
+    margin-top:4px;
+    font-size:13px;
+    color:#aaa;
+}
+
+.playlist-empty{
+    padding:20px;
+    text-align:center;
+    color:#888;
+}
+
+#scrollBottomBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position:fixed;
+    right:15px;
+    bottom:90px; /* di atas input chat */
+    padding: 8px;
+    height: 40px;
+    border-radius:10px;
+    border:none;
+    background:#3a3a3a;
+    color:white;
+    cursor:pointer;
+    display:none;
+
+    z-index:999;
+}
+
+.command-menu{
+    position:fixed;
+    left:15px;
+    right:15px;
+    bottom:85px;
+
+    display:none;
+
+    background:#222;
+    border:1px solid #444;
+    border-radius:8px;
+
+    max-height:220px;
+    overflow-y:auto;
+
+    z-index:999;
+}
+
+.command-item{
+    padding:12px;
+    cursor:pointer;
+    border-bottom:1px solid #333;
+}
+
+.command-item:last-child{
+    border-bottom:none;
+}
+
+.command-item:hover{
+    background:#333;
+}
+
+.command-name{
+    color:#4ea1ff;
+    font-weight:bold;
+}
+
+.command-desc{
+    color:#aaa;
+    font-size:13px;
+    margin-top:3px;
+}
+
+.online-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:12px 14px;
+
+    border-bottom:1px solid #333;
+}
+
+.online-item:last-child{
+    border-bottom:none;
+}
+
+.online-avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.online-name{
+    color:white;
+    font-weight:bold;
+}
+
+.online-status{
+    margin-left:auto;
+    color:#22c55e;
+    font-size:13px;
+}
+
+.online-user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+}
+
+.online-user img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
+
+.online-user span{
+    color:white;
+}
+
+#onlineModal{
+    position:fixed;
+    top:70px;
+    right:10px;
+    width:90%;
+    max-height:300px;
+    overflow-y:auto;
+    background:#202020;
+    border-radius:12px;
+    z-index:9999;
+    padding:10px;
+    display:none;
+}
+
+#onlineBtn {
+  width: 60px;
+  padding: 8px;
+  font-size: 24px;
+}
+
+#refreshBtn, #settingBtn {
+  display: none !important;
+}
+
+#gamePanel{
+    display: none;
+    background:#181818;
+    border-bottom:1px solid #333;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+}
+
+#gameTop{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    font-size:16px;
+    font-weight:bold;
+}
+
+#gameBottom{
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 14px;
+    margin-top:8px;
+}
+
+#gamePlayer{
+    flex:1;
+    text-align:center;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    margin:0 10px;
+}
+
+#gameHeart {
+    position: absolute;
+    right: 6px;
+}
+
+#gameTimer {
+    position: absolute;
+    left: 6px;
+}
+
+#gameHuruf{
+    position: absolute;
+    left: 6px;
+    font-size:30px;
+    font-weight:bold;
+    text-align:center;
+    flex-shrink:0;
+    margin-bottom: -4px;
+}
+
+#gameTyping{
+    flex:1;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#aaa;
+    min-height:22px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+#gamePanel.your-turn {
+    background: gold;
+}
+
+#gameHuruf.your-turn {
+    color: #666;
+}
+
+.online-user.current-turn {
+    background: gold;
+}
+</style>
+</head>  
+<body>
+<div id="loginContainer">
+    <button id="loginBtn">
+        Login Google
+    </button>
+</div>
+
+<div id="userInfo" style="display:none">
+
+    <div class="account">
+        <img id="avatar" src="" alt="Avatar">
+        <span id="username">Username</span>
+    </div>
+
+    <div class="header-buttons">
+      
+        <button id="onlineBtn">
+            <i data-lucide="user"></i>
+        </button>
+        
+       <button id="refreshBtn" hidden>
+            <i data-lucide="rotate-cw"></i>
+        </button>
+        
+        <button id="playlistBtn">
+            <i data-lucide="list-music"></i>
+        </button>
+        
+        <button id="settingBtn">
+            <i data-lucide="settings"></i>
+        </button>
+    </div>
+
+</div>
+
+<div id="gamePanel">
+
+    <div id="gameTop">
+        <span id="gameTimer">20s</span>
+        <span id="gamePlayer">Nama</span>
+        <span id="gameHeart"></span>
+    </div>
+
+    <div id="gameBottom">
+        <div id="gameHuruf">A</div>
+        <div id="gameTyping">TEKS</div>
+    </div>
+
+</div>
+
+<div id="onlineModal" class="playlist-modal" style="display:none">
+
+    <div class="playlist-header">
+        Online
+    </div>
+
+    <div id="onlineList"></div>
+
+</div>
+
+<div id="musicHeader" class="music-header">
+
+    <div class="music-top">
+
+        <div class="music-title-wrapper">
+
+            <div id="musicTitle" class="music-title"></div>
+
+        </div>
+
+        <div id="musicTime" class="music-time">
+            00:00/00:00
+        </div>
+        
+
+    </div>
+
+    <div class="music-progress">
+
+        <div id="musicBar"></div>
+
+    </div>
+    
+
+</div>
+
+<div class="player">
+  <div id="playerFrame"></div>
+</div>
+
+<div class="chat-container" id="chat">
+
+
+</div>
+
+<button id="scrollBottomBtn">
+    <i data-lucide="chevrons-down"></i>
+</button>
+
+<div id="commandMenu" class="command-menu"></div>
+
+<div class="bottom">
+  
+  <div id="replyPreview">
+    <div id="replyText"></div>
+  
+    <button id="cancelReply">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+  
+  <div class="input-area">
+    <textarea
+      id="commandInput"
+      rows="1"
+      placeholder="Pesan atau /play URL 863"></textarea>
+
+    <button id="sendBtn">
+        <i data-lucide="send-horizontal"></i>
+    </button>
+  </div>
+</div>
+
+<div id="menuOverlay" class="menu-overlay">
+    <div class="menu-sheet">
+        <div id="menuPreview" class="menu-preview"></div>
+        <button id="copyBtn">
+            <i data-lucide="copy"></i>
+            Copy
+        </button>
+        <button id="editBtn">
+            <i data-lucide="pencil"></i>
+            Edit
+        </button>
+        <button id="deleteBtn">
+            <i data-lucide="trash-2"></i>
+            Hapus
+        </button>
+        <button id="replyBtn">
+            <i data-lucide="reply"></i>
+            Reply
+        </button>
+    </div>
+</div>
+
+<div id="playlistModal" class="playlist-modal" style="display:none;">
+
+    <div class="playlist-header">
+        Playlist
+    </div>
+
+    <div id="playlistList"></div>
+
+</div>
+
+<script>lucide.createIcons();</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+<script type="module" src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+}
+</script>
+</body>
+</html>
